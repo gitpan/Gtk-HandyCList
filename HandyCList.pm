@@ -3,11 +3,11 @@ use Gnome;
 
 use strict;
 use vars qw($VERSION @ISA);
-use Carp;
+use Carp qw(croak confess);
 
 @ISA = qw(Gtk::CList);
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 1;
 
@@ -33,7 +33,7 @@ Gtk::HandyCList - A more Perl-friendly Columned List
 
 =head1 DESCRIPTION
 
-This is a version of L<Gtk::CList> which takes care of some common
+This is a version of L<Gtk::CList|Gtk::CList> which takes care of some common
 things for the programmer. For instance, it keeps track of what's stored
 in the list, so you don't need to keep a separate array; when the column
 titles are clicked, the list will be re-sorted according to
@@ -46,7 +46,7 @@ reference columns by name, instead of by number.
 
 =item new(@titles)
 
-This is equivalent to L<< Gtk::CList->new_with_titles >>, but initialises 
+This is equivalent to C<< Gtk::CList->new_with_titles >>, but initialises 
 all the data structures required for HandyCList.
 
 =cut
@@ -61,10 +61,14 @@ sub new {
 		    data      => [],
             sortfuncs => []
 		   };
-  for (0..$#titles) { 
+  for (0..$#titles) {
     $self->{handy}->{sortfuncs}->[$_] = sub { $_[0] cmp $_[1] }
   }
   $self->signal_connect('click_column', \&sort_clist);
+  $self->signal_connect('select_row',   
+                        sub { $self->{handy}->{selection}->{$_[1]} = 1 });
+  $self->signal_connect('unselect_row',
+                        sub { delete $self->{handy}->{selection}->{$_[1]} });
   bless $self, $class;
 }
 
@@ -145,6 +149,7 @@ Append some items to the start of the list
 sub append {
   my $self=shift;
   $self->freeze;
+  my $row_no;
   for (@_) {
       croak "One of the elements to ->append() wasn't a reference"
 	unless ref $_;
@@ -156,11 +161,12 @@ sub append {
 	croak "Element to ->append() was neither hash nor array reference";
       }
       push @{$self->{handy}->{data}}, $_;
-      $self->SUPER::append(@$_{@{$self->{handy}->{titles}}});
+      $row_no = $self->SUPER::append(@$_{@{$self->{handy}->{titles}}});
   }
   $self->thaw();
   # Data is now unsorted
   $self->{handy}->{sorted} = 0.1;
+  return $row_no;
 }
 sub prepend {
   my $self=shift;
@@ -176,6 +182,7 @@ sub prepend {
 	croak "Element to ->prepend() was neither hash nor array reference";
       }
       unshift @{$self->{handy}->{data}}, $_;
+      # Must change
       $self->SUPER::prepend(@$_{@{$self->{handy}->{titles}}});
   }
   $self->thaw();
@@ -218,20 +225,20 @@ sub sortfuncs {
     $self->{handy}->{sortfuncs} = \@list;
   } else {
     my %hash = @_;
-    for (keys %hash) {
+    for (values %hash) {
       # Sanitise input
       if ($_ eq "alpha") {
 	$_ = sub {$a cmp $b}
       } elsif ($_ eq "number") {
 	$_ = sub {$a <=> $b}
       } elsif (ref $_ ne "CODE") {
-	croak "Argument $_ to ->sortfuncs() was neither 'alpha', 'number' nor a coderef";
+	croak "Argument $_ to ->sortfuncs() was neither 'number', 'alpha' nor a coderef";
       }
     }
     # Do you know how much I love manipulation of abstract data
-    # structures? 
+    # structures?
     # Not at all.
-    $self->{handy}->{softfuncs} = [ @hash{@{$self->{handy}->{titles}}} ];
+    $self->{handy}->{sortfuncs} = [ @hash{@{$self->{handy}->{titles}}} ];
   }
 }
 
@@ -245,13 +252,15 @@ sub sort_clist {
       $self->{handy}->{sorted} *= -1;
   } else {
       $self->{handy}->{data} = [ # It's crazy, but it just might work...
-                    sort 
-                    { $sortsub->($a->{$head}, $b->{$head})} 
-                    @{$self->{handy}->{data}} 
+                    sort
+                    { $sortsub->($a->{$head}, $b->{$head})}
+                    @{$self->{handy}->{data}}
                    ] ;
       $self->{handy}->{sorted} = $column;
   }
-      
+
+  $self->{handy}->{selection} = {};
+
   $self->refresh;
 }
 
@@ -311,7 +320,57 @@ sub sizes {
   }
 }
 
-=back
+=pod
+
+=item selection
+
+Return data regarding what is currently selected.  The return value is a
+hashref, the keys being the (0-based) row numbers selected, the values
+being hashrefs themselves, from column name to column data.
+
+=cut
+
+sub selection {
+  my $self = shift;
+  my @rows_selected = keys %{$self->{handy}->{selection}};
+  my %selection = map { $_, $self->{handy}->{data}->[$_] } @rows_selected;
+  return \%selection; 
+}
+
+=pod
+
+=item hide (@columns)
+
+Prevent certain columns from being displayed. 
+
+=item unhide (@columns)
+
+Re-allow display of certain columns
+
+=cut
+
+sub hide {
+    my $self = shift;
+    my %cols = map { $self->{handy}->{titles}->[$_] => $_ } 0..$#{$self->{handy}->{titles}};
+    for (@_) {
+        croak "Unknown column $_" 
+            unless exists $cols{$_};
+        $self->set_column_visibility($cols{$_},0);
+    }
+}
+
+sub unhide {
+    my $self = shift;
+    my %cols = map { $self->{handy}->{titles}->[$_] => $_ } 0..$#{$self->{handy}->{titles}};
+    for (@_) {
+        croak "Unknown column $_" 
+            unless exists $cols{$_};
+        $self->set_column_visibility($cols{$_},1);
+    }
+}
+
+# I could have said "*hide = *unhide" and looked at caller, but that
+# seemed silly.
 
 =head1 AUTHOR
 
