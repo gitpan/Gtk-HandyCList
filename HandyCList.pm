@@ -7,47 +7,39 @@ use Carp qw(croak confess);
 
 @ISA = qw(Gtk::CList);
 
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 1;
 
 =head1 NAME
 
-Gtk::HandyCList - A more Perl-friendly Columned List
+Gtk::HandyCList
 
 =head1 SYNOPSIS
 
-  use Gtk::HandyCList;
-  my $vbox = new Gtk::VBox(0,5);
-  my $scrolled_window = new Gtk::ScrolledWindow( undef, undef );
-  $vbox->pack_start( $scrolled_window, 1, 1, 0 );
-  $scrolled_window->set_policy( 'automatic', 'always' );
-
-  my $list = Gtk::HandyCList->new( qw(Name Date Cost) );
-  $list->data( [ "Foo", "29/05/78", 12.33],
-               [ "Bar", "01/01/74", 104.21],
-               # ...
-             );
-  $list->sizes( Name => 100, Date => "30%", Cost => "40%" );
-  $list->sortfuncs( Name => "alpha", Date => \&date_sort, Cost => "number");
+B<Do not use. This module is deprecated.>
 
 =head1 DESCRIPTION
 
-This is a version of L<Gtk::CList|Gtk::CList> which takes care of some common
-things for the programmer. For instance, it keeps track of what's stored
-in the list, so you don't need to keep a separate array; when the column
-titles are clicked, the list will be re-sorted according to
-user-supplied functions or some default rules. It allows you to
-reference columns by name, instead of by number.
+This is a utility module for Gtk-Perl, the Perl bindings to Gtk+ 1.x. Gtk-Perl has been unmaintained for a long time. Gtk+ 1.x, the library it binds, has been superseded by the API-incompatible Gtk+ 2.x series, and has subsequently been deprecated as well.
 
-=head1 METHODS
+If you are writing a new application, use Gtk2-Perl instead. The Gtk+ 2.x toolkit it binds has a cleaner, more modern design than Gtk+ 1.x, and the bindings are much more comprehensive than Gtk-Perl ever was. Gtk2-Perl comes packaged with a module providing very similar functionality as this one, called L<Gtk2::SimpleList|Gtk2::SimpleList>.
 
-=over 3
+The code in this version of the module is identical to L<Gtk::HandyCList|Gtk::HandyCList> 0.02, so that legacy applications will continue to work. Only the documentation has been replaced with a deprecation warning in order to discourage new development based on this module.
 
-=item new(@titles)
+=head1 AUTHOR
 
-This is equivalent to C<< Gtk::CList->new_with_titles >>, but initialises 
-all the data structures required for HandyCList.
+Simon Cozens, simon@cpan.org
+
+=head1 SEE ALSO
+
+=over 4
+
+=item * Gtk2-Perl, L<http://gtk2-perl.sf.net/>
+
+=item * L<Gtk2::SimpleList|Gtk2::SimpleList>
+
+=back
 
 =cut
 
@@ -72,31 +64,6 @@ sub new {
   bless $self, $class;
 }
 
-=pod
-
-=item data(@data)
-
-A get-set method to retrieve and/or set the data in the table. The data
-is specified as an array of rows, and each row may either be an array
-reference or a hash reference. If a hash reference, the keys of the
-hash must correspond to the columns of the table.
-
-Example: You may either say this, using array references:
-
-  my $list = Gtk::HandyCList->new( qw(Name Date Cost) );
-  $list->data( [ "Foo", "29/05/78", 12.33],
-               [ "Bar", "01/01/74", 104.21] );
-
-or this, using hash references:
-
-  my $list = Gtk::HandyCList->new( qw(Name Date Cost) );
-  $list->data( { Name => "Foo", Date => "29/05/78", Cost => 12.33 },
-               { Name => "Bar", Date => "01/01/74", Cost =>104.21 } );
-
-The data will be returned as an array of hash references.
-
-=cut
-
 sub data {
   my $self = shift;
   if (@_) {
@@ -119,32 +86,11 @@ sub data {
   return @{$self->{handy}->{data}};
 }
 
-=pod
-
-=item clear
-
-Remove all entries from the list.
-
-=cut
-
 sub clear {
   my $self = shift;
   $self->SUPER::clear;
   $self->{handy}->{data}=[];
 }
-
-=pod
-
-=item append(@items)
-
-Append some items to the list; semantics of C<@items> are the same as for
-the C<data> method above.
-
-=item prepend(@items)
-
-Append some items to the start of the list
-
-=cut
 
 sub append {
   my $self=shift;
@@ -168,6 +114,7 @@ sub append {
   $self->{handy}->{sorted} = 0.1;
   return $row_no;
 }
+
 sub prepend {
   my $self=shift;
   $self->freeze;
@@ -189,23 +136,6 @@ sub prepend {
   # Data is now unsorted
   $self->{handy}->{sorted} = 0.1;
 }
-
-=pod
-
-=item sortfuncs(@functions | %functions )
-
-HandyCList automatically takes care of sorting the columns in the list
-for you when the user clicks on the column titles. To do this, though,
-you need to provide indication of how the data should be sorted. You
-may provide either a list or a hash (keyed to columns as before) of
-subroutine references or the strings "alpha" or "number" for
-alphabetic and numeric comparison respectively.
-
-Subroutine references here are B<not> the same as you would hand to
-C<sort>: they must take two arguments and compare them, instead of
-comparing the implicit variables C<$a> and C<$b>.
-
-=cut
 
 sub sortfuncs {
   my $self = shift;
@@ -264,16 +194,6 @@ sub sort_clist {
   $self->refresh;
 }
 
-=pod
-
-=item refresh
-
-Make sure that the data displayed in the list is the same as the data
-you'd get back from C<< $list->data >>. You probably won't need to
-call this, unless you're doing freaky things.
-
-=cut
-
 sub refresh {
   my $self = shift;
   $self->freeze;
@@ -283,17 +203,6 @@ sub refresh {
   $self->thaw;
 
 }
-
-=pod
-
-=item sizes(@columns | %columns)
-
-Set the size of each column as a number of pixels or as a
-percentage. At least one of the columns must be given as a number of
-pixels. Percentages should be strings like C<"40%">, not floating
-point numbers.
-
-=cut
 
 sub sizes {
   my $self = shift;
@@ -320,34 +229,12 @@ sub sizes {
   }
 }
 
-=pod
-
-=item selection
-
-Return data regarding what is currently selected.  The return value is a
-hashref, the keys being the (0-based) row numbers selected, the values
-being hashrefs themselves, from column name to column data.
-
-=cut
-
 sub selection {
   my $self = shift;
   my @rows_selected = keys %{$self->{handy}->{selection}};
   my %selection = map { $_, $self->{handy}->{data}->[$_] } @rows_selected;
   return \%selection; 
 }
-
-=pod
-
-=item hide (@columns)
-
-Prevent certain columns from being displayed. 
-
-=item unhide (@columns)
-
-Re-allow display of certain columns
-
-=cut
 
 sub hide {
     my $self = shift;
@@ -371,13 +258,3 @@ sub unhide {
 
 # I could have said "*hide = *unhide" and looked at caller, but that
 # seemed silly.
-
-=head1 AUTHOR
-
-Simon Cozens, simon@cpan.org
-
-=head1 SEE ALSO
-
-L<GNOME>, L<Gtk::CList>
-
-=cut

@@ -1,5 +1,8 @@
 Revision history for Perl extension Gtk::HandyCList.
 
+0.03  Mon Oct 25 14:22:30 CEST 2004
+    - Deprecated
+
 0.02  Tue Nov 21 14:16:33 GMT 2000
     - Lots of fixes and additions from Martyn Pearce.
     - hide() and unhide() methods
