@@ -1,6 +1,10 @@
 Changes
-HandyCList.pm
+lib/Gtk/HandyCList.pm
 MANIFEST
+README
+Build.PL
+META.yml
+t/00.load.t
+t/pod-coverage.t
+t/pod.t
 Makefile.PL
-test.pl
-META.yml                                 Module meta-data (added by MakeMaker)

@@ -1,10 +1,15 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         Gtk-HandyCList
-version:      0.03
-version_from: HandyCList.pm
-installdirs:  site
+---
+name: Gtk-HandyCList
+version: 0.031
+author:
+  - Simon Cozens
+abstract: ~
+license: perl
 requires:
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.17
+  Gnome: 0
+  Test::More: 0
+provides:
+  Gtk::HandyCList:
+    file: lib/Gtk/HandyCList.pm
+    version: 0.031
+generated_by: Module::Build version 0.2611

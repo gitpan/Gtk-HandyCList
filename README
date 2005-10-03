@@ -1,0 +1,23 @@
+Gtk::HandyCList
+
+This module is deprecated. Do not use it.
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+    perl Build.PL
+    ./Build
+    ./Build test
+    ./Build install
+
+DEPENDENCIES
+
+XML::SAX::Builder
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2004, Simon Cozens
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.

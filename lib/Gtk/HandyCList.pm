@@ -7,7 +7,7 @@ use Carp qw(croak confess);
 
 @ISA = qw(Gtk::CList);
 
-$VERSION = '0.03';
+$VERSION = '0.031';
 
 1;
 
@@ -258,3 +258,5 @@ sub unhide {
 
 # I could have said "*hide = *unhide" and looked at caller, but that
 # seemed silly.
+
+1;
