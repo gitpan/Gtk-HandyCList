@@ -1,10 +1,11 @@
 Changes
-lib/Gtk/HandyCList.pm
+LICENSE
 MANIFEST
-README
-Build.PL
+META.json
 META.yml
-t/00.load.t
-t/pod-coverage.t
-t/pod.t
 Makefile.PL
+README
+dist.ini
+lib/Gtk/HandyCList.pm
+t/00.load.t
+t/cpants.t

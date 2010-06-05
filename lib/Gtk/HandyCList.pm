@@ -1,13 +1,16 @@
 package Gtk::HandyCList;
+BEGIN {
+  $Gtk::HandyCList::VERSION = '0.032';
+}
 use Gnome;
 
+# ABSTRACT: deprecated
+
 use strict;
-use vars qw($VERSION @ISA);
+use vars qw(@ISA);
 use Carp qw(croak confess);
 
 @ISA = qw(Gtk::CList);
-
-$VERSION = '0.031';
 
 1;
 

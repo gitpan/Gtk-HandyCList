@@ -1,23 +1,13 @@
-Gtk::HandyCList
 
-This module is deprecated. Do not use it.
 
-INSTALLATION
+This archive contains the distribution Gtk-HandyCList,
+version 0.032:
 
-To install this module, run the following commands:
+  deprecated
 
-    perl Build.PL
-    ./Build
-    ./Build test
-    ./Build install
+This software is copyright (c) 2010 by Aristotle Pagaltzis.
 
-DEPENDENCIES
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-XML::SAX::Builder
 
-COPYRIGHT AND LICENCE
-
-Copyright (C) 2004, Simon Cozens
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.

@@ -1,0 +1,28 @@
+{
+   "abstract" : "deprecated",
+   "author" : [
+      "Aristotle Pagaltzis <pagaltzis@gmx.de>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Dist::Zilla version 4.101550",
+   "license" : "perl_5",
+   "meta-spec" : {
+      "url" : "http://github.com/dagolden/cpan-meta/",
+      "version" : 2
+   },
+   "name" : "Gtk-HandyCList",
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "6.31"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Gnome" : "0"
+         }
+      }
+   },
+   "release_status" : "stable",
+   "version" : "0.032"
+}
